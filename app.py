@@ -1,8 +1,88 @@
-import gradio as gr
+import streamlit as st
 import pandas as pd
 import joblib
 
 model = joblib.load("diabetes_model.pkl")
+
+st.set_page_config(
+    page_title="DiaPredict",
+    page_icon="🩺",
+    layout="wide"
+)
+
+st.markdown("""
+<style>
+
+.stApp {
+    background: linear-gradient(135deg, #f5fbff 0%, #eef8f4 100%);
+}
+
+.block-container {
+    max-width: 1150px;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.hero {
+    text-align: center;
+    padding: 45px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 19px;
+    color: #64748b;
+}
+
+.section-title {
+    font-size: 23px;
+    font-weight: 700;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.result-card {
+    padding: 30px;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-top: 25px;
+}
+
+.risk-score {
+    font-size: 55px;
+    font-weight: 800;
+}
+
+.high-risk {
+    color: #dc2626;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.low-risk {
+    color: #16a34a;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+div.stButton > button {
+    width: 100%;
+    height: 55px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 age_map = {
     "18–24": 1,
@@ -20,306 +100,351 @@ age_map = {
     "80+": 13
 }
 
-yes_no = {
+yn = {
     "No": 0,
     "Yes": 1
 }
 
-def predict_diabetes(
-    high_bp,
-    high_chol,
-    chol_check,
-    bmi,
-    smoker,
-    stroke,
-    heart_disease,
-    physical_activity,
-    fruits,
-    veggies,
-    heavy_alcohol,
-    healthcare,
-    no_doc_cost,
-    general_health,
-    mental_health,
-    physical_health,
-    difficulty_walking,
-    sex,
-    age,
-    education,
-    income
-):
 
-    data = pd.DataFrame([{
-        "HighBP": yes_no[high_bp],
-        "HighChol": yes_no[high_chol],
-        "CholCheck": yes_no[chol_check],
+st.markdown("""
+<div class="hero">
+
+<h1>🩺 DiaPredict</h1>
+
+<p>
+AI-Powered Early Diabetes Risk Screening
+</p>
+
+<p>
+Machine learning analysis using public health indicators
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+
+st.warning(
+    "This application is an educational screening tool and "
+    "does not provide a medical diagnosis."
+)
+
+
+st.markdown(
+    '<div class="section-title">👤 Personal Information</div>',
+    unsafe_allow_html=True
+)
+
+c1, c2, c3 = st.columns(3)
+
+with c1:
+    age = st.selectbox(
+        "Age",
+        list(age_map.keys())
+    )
+
+with c2:
+    sex = st.selectbox(
+        "Sex",
+        ["Female", "Male"]
+    )
+
+with c3:
+    bmi = st.number_input(
+        "BMI",
+        min_value=10.0,
+        max_value=70.0,
+        value=25.0
+    )
+
+
+st.markdown(
+    '<div class="section-title">❤️ Medical Information</div>',
+    unsafe_allow_html=True
+)
+
+c1, c2, c3 = st.columns(3)
+
+with c1:
+    high_bp = st.selectbox(
+        "High Blood Pressure",
+        ["No", "Yes"]
+    )
+
+    stroke = st.selectbox(
+        "History of Stroke",
+        ["No", "Yes"]
+    )
+
+with c2:
+    high_chol = st.selectbox(
+        "High Cholesterol",
+        ["No", "Yes"]
+    )
+
+    heart = st.selectbox(
+        "Heart Disease / Heart Attack",
+        ["No", "Yes"]
+    )
+
+with c3:
+    chol_check = st.selectbox(
+        "Cholesterol Check in Last 5 Years",
+        ["Yes", "No"]
+    )
+
+    diff_walk = st.selectbox(
+        "Difficulty Walking",
+        ["No", "Yes"]
+    )
+
+
+st.markdown(
+    '<div class="section-title">🏃 Lifestyle</div>',
+    unsafe_allow_html=True
+)
+
+c1, c2, c3 = st.columns(3)
+
+with c1:
+
+    smoker = st.selectbox(
+        "Smoked 100+ Cigarettes",
+        ["No", "Yes"]
+    )
+
+    physical_activity = st.selectbox(
+        "Regular Physical Activity",
+        ["Yes", "No"]
+    )
+
+with c2:
+
+    fruits = st.selectbox(
+        "Consumes Fruit Daily",
+        ["Yes", "No"]
+    )
+
+    veggies = st.selectbox(
+        "Consumes Vegetables Daily",
+        ["Yes", "No"]
+    )
+
+with c3:
+
+    alcohol = st.selectbox(
+        "Heavy Alcohol Consumption",
+        ["No", "Yes"]
+    )
+
+    healthcare = st.selectbox(
+        "Has Healthcare Coverage",
+        ["Yes", "No"]
+    )
+
+
+st.markdown(
+    '<div class="section-title">🧠 General Health</div>',
+    unsafe_allow_html=True
+)
+
+c1, c2 = st.columns(2)
+
+with c1:
+
+    general_health_text = st.selectbox(
+        "General Health",
+        [
+            "Excellent",
+            "Very Good",
+            "Good",
+            "Fair",
+            "Poor"
+        ]
+    )
+
+    mental_health = st.slider(
+        "Poor Mental Health Days (Last 30 Days)",
+        0,
+        30,
+        0
+    )
+
+    no_doc_cost = st.selectbox(
+        "Unable to See Doctor Due to Cost",
+        ["No", "Yes"]
+    )
+
+with c2:
+
+    physical_health = st.slider(
+        "Poor Physical Health Days (Last 30 Days)",
+        0,
+        30,
+        0
+    )
+
+    education = st.slider(
+        "Education Level",
+        1,
+        6,
+        4
+    )
+
+    income = st.slider(
+        "Income Level",
+        1,
+        8,
+        5
+    )
+
+
+health_map = {
+    "Excellent": 1,
+    "Very Good": 2,
+    "Good": 3,
+    "Fair": 4,
+    "Poor": 5
+}
+
+
+st.write("")
+
+predict = st.button(
+    "🔍 Analyze Diabetes Risk",
+    type="primary"
+)
+
+
+if predict:
+
+    input_data = pd.DataFrame([{
+
+        "HighBP": yn[high_bp],
+        "HighChol": yn[high_chol],
+        "CholCheck": yn[chol_check],
         "BMI": bmi,
-        "Smoker": yes_no[smoker],
-        "Stroke": yes_no[stroke],
-        "HeartDiseaseorAttack": yes_no[heart_disease],
-        "PhysActivity": yes_no[physical_activity],
-        "Fruits": yes_no[fruits],
-        "Veggies": yes_no[veggies],
-        "HvyAlcoholConsump": yes_no[heavy_alcohol],
-        "AnyHealthcare": yes_no[healthcare],
-        "NoDocbcCost": yes_no[no_doc_cost],
-        "GenHlth": general_health,
+        "Smoker": yn[smoker],
+        "Stroke": yn[stroke],
+        "HeartDiseaseorAttack": yn[heart],
+        "PhysActivity": yn[physical_activity],
+        "Fruits": yn[fruits],
+        "Veggies": yn[veggies],
+        "HvyAlcoholConsump": yn[alcohol],
+        "AnyHealthcare": yn[healthcare],
+        "NoDocbcCost": yn[no_doc_cost],
+        "GenHlth": health_map[general_health_text],
         "MentHlth": mental_health,
         "PhysHlth": physical_health,
-        "DiffWalk": yes_no[difficulty_walking],
+        "DiffWalk": yn[diff_walk],
         "Sex": 1 if sex == "Male" else 0,
         "Age": age_map[age],
         "Education": education,
         "Income": income
+
     }])
 
-    probability = model.predict_proba(data)[0][1]
+    probability = model.predict_proba(input_data)[0][1]
 
     score = probability * 100
 
+
     if probability >= 0.35:
-        result = "⚠️ Higher Screening Risk"
+
+        st.markdown(
+            f"""
+            <div class="result-card">
+
+                <p>MODEL RISK SCORE</p>
+
+                <div class="risk-score">
+                    {score:.1f}%
+                </div>
+
+                <div class="high-risk">
+                    ⚠️ Higher Screening Risk
+                </div>
+
+                <br>
+
+                <p>
+                The model score exceeded the
+                35% screening threshold.
+                </p>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
     else:
-        result = "✅ Lower Screening Risk"
 
-    return result, f"{score:.1f}%"
+        st.markdown(
+            f"""
+            <div class="result-card">
 
-with gr.Blocks(title="Diabetes AI Risk Screening") as app:
+                <p>MODEL RISK SCORE</p>
 
-    gr.Markdown(
-        """
-        # 🩺 AI Diabetes Risk Screening
+                <div class="risk-score">
+                    {score:.1f}%
+                </div>
 
-        ### Machine-learning based early diabetes risk assessment
+                <div class="low-risk">
+                    ✅ Lower Screening Risk
+                </div>
 
-        Enter your health information below to generate a screening risk score.
+                <br>
 
-        > **Important:** This application is an educational screening tool and
-        > does not provide a medical diagnosis.
-        """
-    )
+                <p>
+                The model score was below the
+                35% screening threshold.
+                </p>
 
-    with gr.Row():
-
-        with gr.Column():
-
-            gr.Markdown("## 👤 Basic Information")
-
-            age = gr.Dropdown(
-                choices=list(age_map.keys()),
-                value="25–29",
-                label="Age"
-            )
-
-            sex = gr.Radio(
-                ["Female", "Male"],
-                value="Male",
-                label="Sex"
-            )
-
-            bmi = gr.Number(
-                value=25,
-                label="BMI"
-            )
-
-            education = gr.Slider(
-                1,
-                6,
-                value=4,
-                step=1,
-                label="Education Level"
-            )
-
-            income = gr.Slider(
-                1,
-                8,
-                value=5,
-                step=1,
-                label="Income Level"
-            )
-
-        with gr.Column():
-
-            gr.Markdown("## ❤️ Medical Information")
-
-            high_bp = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="High Blood Pressure"
-            )
-
-            high_chol = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="High Cholesterol"
-            )
-
-            chol_check = gr.Radio(
-                ["No", "Yes"],
-                value="Yes",
-                label="Cholesterol Check in Last 5 Years"
-            )
-
-            stroke = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="History of Stroke"
-            )
-
-            heart_disease = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="Heart Disease or Heart Attack"
-            )
-
-    with gr.Row():
-
-        with gr.Column():
-
-            gr.Markdown("## 🏃 Lifestyle")
-
-            smoker = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="Smoked at least 100 cigarettes"
-            )
-
-            physical_activity = gr.Radio(
-                ["No", "Yes"],
-                value="Yes",
-                label="Physical Activity"
-            )
-
-            fruits = gr.Radio(
-                ["No", "Yes"],
-                value="Yes",
-                label="Consumes Fruit Daily"
-            )
-
-            veggies = gr.Radio(
-                ["No", "Yes"],
-                value="Yes",
-                label="Consumes Vegetables Daily"
-            )
-
-            heavy_alcohol = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="Heavy Alcohol Consumption"
-            )
-
-        with gr.Column():
-
-            gr.Markdown("## 🧠 General Health")
-
-            general_health = gr.Slider(
-                1,
-                5,
-                value=3,
-                step=1,
-                label="General Health (1 = Excellent, 5 = Poor)"
-            )
-
-            mental_health = gr.Slider(
-                0,
-                30,
-                value=0,
-                step=1,
-                label="Poor Mental Health Days"
-            )
-
-            physical_health = gr.Slider(
-                0,
-                30,
-                value=0,
-                step=1,
-                label="Poor Physical Health Days"
-            )
-
-            difficulty_walking = gr.Radio(
-                ["No", "Yes"],
-                value="No",
-                label="Difficulty Walking"
-            )
-
-    with gr.Row():
-
-        healthcare = gr.Radio(
-            ["No", "Yes"],
-            value="Yes",
-            label="Healthcare Coverage"
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        no_doc_cost = gr.Radio(
-            ["No", "Yes"],
-            value="No",
-            label="Unable to See Doctor Due to Cost"
-        )
 
-    predict_button = gr.Button(
-        "🔍 Analyze Diabetes Risk",
-        variant="primary"
+st.divider()
+
+st.markdown("## 🤖 About the AI Model")
+
+m1, m2, m3 = st.columns(3)
+
+with m1:
+    st.metric(
+        "Test Accuracy",
+        "75.47%"
     )
 
-    gr.Markdown("## 📊 Screening Result")
-
-    result = gr.Textbox(
-        label="Risk Classification",
-        interactive=False
+with m2:
+    st.metric(
+        "ROC-AUC",
+        "0.8304"
     )
 
-    risk_score = gr.Textbox(
-        label="Model Risk Score",
-        interactive=False
+with m3:
+    st.metric(
+        "Diabetes Recall*",
+        "90%"
     )
 
-    gr.Markdown(
-        """
-        ---
-        ### About the Model
+st.caption(
+    "*Positive-class recall obtained using the 0.35 "
+    "screening threshold on the held-out test set."
+)
 
-        **Algorithm:** XGBoost Classifier  
-        **Dataset:** BRFSS 2015  
-        **Records:** 70,692  
-        **Features:** 21  
-        **Test Accuracy:** 75.47%  
-        **ROC-AUC:** 0.8304  
-        **Diabetes Recall at 0.35 threshold:** 90%
+st.markdown("""
+### Model Information
 
-        The model risk score should not be interpreted as the real-world
-        probability that an individual has diabetes.
-        """
-    )
+**Algorithm:** XGBoost Classifier
 
-    predict_button.click(
-        fn=predict_diabetes,
-        inputs=[
-            high_bp,
-            high_chol,
-            chol_check,
-            bmi,
-            smoker,
-            stroke,
-            heart_disease,
-            physical_activity,
-            fruits,
-            veggies,
-            heavy_alcohol,
-            healthcare,
-            no_doc_cost,
-            general_health,
-            mental_health,
-            physical_health,
-            difficulty_walking,
-            sex,
-            age,
-            education,
-            income
-        ],
-        outputs=[
-            result,
-            risk_score
-        ]
-    )
+**Dataset:** BRFSS 2015 public health data
 
-app.launch()
+**Records:** 70,692
+
+**Input Features:** 21
+
+The displayed model risk score should not be interpreted as
+the real-world probability that an individual has diabetes.
+""")
