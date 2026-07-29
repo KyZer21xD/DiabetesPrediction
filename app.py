@@ -159,23 +159,23 @@ health_map = {
 
 education_map = {
     "Never attended school": 1,
-    "Elementary school": 2,
-    "Some high school": 3,
-    "High school graduate": 4,
-    "Some college / technical school": 5,
-    "College graduate": 6
+    "Primary school": 2,
+    "Secondary school": 3,
+    "Higher secondary / Class 12": 4,
+    "Diploma / Some college": 5,
+    "Graduate or above": 6
 }
 
 
 income_map = {
-    "Less than $10,000": 1,
-    "$10,000 – $14,999": 2,
-    "$15,000 – $19,999": 3,
-    "$20,000 – $24,999": 4,
-    "$25,000 – $34,999": 5,
-    "$35,000 – $49,999": 6,
-    "$50,000 – $74,999": 7,
-    "$75,000 or more": 8
+    "Below ₹2,00,000 per year": 1,
+    "₹2,00,000 – ₹3,00,000 per year": 2,
+    "₹3,00,000 – ₹4,00,000 per year": 3,
+    "₹4,00,000 – ₹5,00,000 per year": 4,
+    "₹5,00,000 – ₹7,00,000 per year": 5,
+    "₹7,00,000 – ₹10,00,000 per year": 6,
+    "₹10,00,000 – ₹15,00,000 per year": 7,
+    "Above ₹15,00,000 per year": 8
 }
 
 
@@ -210,7 +210,6 @@ c1, c2, c3 = st.columns(3)
 
 
 with c1:
-
     age = st.selectbox(
         "Age",
         list(age_map.keys()),
@@ -219,7 +218,6 @@ with c1:
 
 
 with c2:
-
     sex = st.selectbox(
         "Sex",
         ["Female", "Male"]
@@ -227,7 +225,6 @@ with c2:
 
 
 with c3:
-
     bmi = st.number_input(
         "BMI",
         min_value=10.0,
@@ -247,7 +244,6 @@ c1, c2, c3 = st.columns(3)
 
 
 with c1:
-
     high_bp = st.selectbox(
         "High Blood Pressure",
         ["No", "Yes"]
@@ -260,7 +256,6 @@ with c1:
 
 
 with c2:
-
     high_chol = st.selectbox(
         "High Cholesterol",
         ["No", "Yes"]
@@ -273,7 +268,6 @@ with c2:
 
 
 with c3:
-
     chol_check = st.selectbox(
         "Cholesterol Check in Last 5 Years",
         ["Yes", "No"]
@@ -295,7 +289,6 @@ c1, c2, c3 = st.columns(3)
 
 
 with c1:
-
     smoker = st.selectbox(
         "Smoked at Least 100 Cigarettes in Lifetime",
         ["No", "Yes"]
@@ -308,7 +301,6 @@ with c1:
 
 
 with c2:
-
     fruits = st.selectbox(
         "Consumes Fruit Daily",
         ["Yes", "No"]
@@ -321,7 +313,6 @@ with c2:
 
 
 with c3:
-
     alcohol = st.selectbox(
         "Heavy Alcohol Consumption",
         ["No", "Yes"]
@@ -334,7 +325,7 @@ with c3:
 
 
 st.markdown(
-    '<div class="section-title">🧠 General Health</div>',
+    '<div class="section-title">🧠 General Health & Background</div>',
     unsafe_allow_html=True
 )
 
@@ -343,7 +334,6 @@ c1, c2 = st.columns(2)
 
 
 with c1:
-
     general_health_text = st.selectbox(
         "General Health",
         [
@@ -370,7 +360,6 @@ with c1:
 
 
 with c2:
-
     physical_health = st.slider(
         "Poor Physical Health Days (Last 30 Days)",
         min_value=0,
@@ -385,9 +374,10 @@ with c2:
     )
 
     income_text = st.selectbox(
-        "Annual Household Income",
+        "Annual Household Income (₹)",
         list(income_map.keys()),
-        index=5
+        index=4,
+        help="Income categories have been adapted for the Indian-facing interface."
     )
 
 
@@ -435,211 +425,205 @@ if predict:
     if probability >= 0.35:
 
         result_html = f"""
-        <!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
 
-        <html>
+<style>
 
-        <head>
+body {{
+    margin: 0;
+    padding: 10px;
+    background: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+}}
 
-        <style>
+.card {{
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 22px;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+}}
 
-        body {{
-            margin: 0;
-            padding: 10px;
-            background: transparent;
-            font-family: Arial, Helvetica, sans-serif;
-        }}
+.label {{
+    color: #64748B;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}}
 
-        .card {{
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 22px;
-            padding: 35px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(15,23,42,0.08);
-        }}
+.score {{
+    color: #172033;
+    font-size: 64px;
+    font-weight: 800;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}}
 
-        .label {{
-            color: #64748B;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-        }}
+.risk {{
+    color: #DC2626;
+    font-size: 25px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}}
 
-        .score {{
-            color: #172033;
-            font-size: 64px;
-            font-weight: 800;
-            margin-top: 10px;
-            margin-bottom: 15px;
-        }}
+.description {{
+    color: #64748B;
+    font-size: 16px;
+    line-height: 1.6;
+}}
 
-        .risk {{
-            color: #DC2626;
-            font-size: 25px;
-            font-weight: 700;
-            margin-bottom: 18px;
-        }}
+.threshold {{
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #FEE2E2;
+    color: #B91C1C;
+    font-size: 13px;
+    font-weight: 600;
+}}
 
-        .description {{
-            color: #64748B;
-            font-size: 16px;
-            line-height: 1.6;
-        }}
+</style>
 
-        .threshold {{
-            display: inline-block;
-            margin-top: 10px;
-            padding: 7px 14px;
-            border-radius: 20px;
-            background: #FEE2E2;
-            color: #B91C1C;
-            font-size: 13px;
-            font-weight: 600;
-        }}
+</head>
 
-        </style>
+<body>
 
-        </head>
+<div class="card">
 
-        <body>
+    <div class="label">
+        MODEL RISK SCORE
+    </div>
 
-        <div class="card">
+    <div class="score">
+        {score:.1f}%
+    </div>
 
-            <div class="label">
-                MODEL RISK SCORE
-            </div>
+    <div class="risk">
+        ⚠️ Higher Screening Risk
+    </div>
 
-            <div class="score">
-                {score:.1f}%
-            </div>
+    <div class="description">
+        Your model score is above the screening threshold.
+        <br>
+        Consider discussing diabetes screening with a
+        qualified healthcare professional.
+    </div>
 
-            <div class="risk">
-                ⚠️ Higher Screening Risk
-            </div>
+    <div class="threshold">
+        Screening Threshold: 35%
+    </div>
 
-            <div class="description">
-                The model score exceeded the screening threshold.
-                <br>
-                Consider discussing diabetes screening with a
-                qualified healthcare professional.
-            </div>
+</div>
 
-            <div class="threshold">
-                Screening threshold: 35%
-            </div>
-
-        </div>
-
-        </body>
-
-        </html>
-        """
+</body>
+</html>
+"""
 
 
     else:
 
         result_html = f"""
-        <!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
 
-        <html>
+<style>
 
-        <head>
+body {{
+    margin: 0;
+    padding: 10px;
+    background: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+}}
 
-        <style>
+.card {{
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 22px;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+}}
 
-        body {{
-            margin: 0;
-            padding: 10px;
-            background: transparent;
-            font-family: Arial, Helvetica, sans-serif;
-        }}
+.label {{
+    color: #64748B;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}}
 
-        .card {{
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 22px;
-            padding: 35px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(15,23,42,0.08);
-        }}
+.score {{
+    color: #172033;
+    font-size: 64px;
+    font-weight: 800;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}}
 
-        .label {{
-            color: #64748B;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-        }}
+.risk {{
+    color: #16A34A;
+    font-size: 25px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}}
 
-        .score {{
-            color: #172033;
-            font-size: 64px;
-            font-weight: 800;
-            margin-top: 10px;
-            margin-bottom: 15px;
-        }}
+.description {{
+    color: #64748B;
+    font-size: 16px;
+    line-height: 1.6;
+}}
 
-        .risk {{
-            color: #16A34A;
-            font-size: 25px;
-            font-weight: 700;
-            margin-bottom: 18px;
-        }}
+.threshold {{
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #DCFCE7;
+    color: #15803D;
+    font-size: 13px;
+    font-weight: 600;
+}}
 
-        .description {{
-            color: #64748B;
-            font-size: 16px;
-            line-height: 1.6;
-        }}
+</style>
 
-        .threshold {{
-            display: inline-block;
-            margin-top: 10px;
-            padding: 7px 14px;
-            border-radius: 20px;
-            background: #DCFCE7;
-            color: #15803D;
-            font-size: 13px;
-            font-weight: 600;
-        }}
+</head>
 
-        </style>
+<body>
 
-        </head>
+<div class="card">
 
-        <body>
+    <div class="label">
+        MODEL RISK SCORE
+    </div>
 
-        <div class="card">
+    <div class="score">
+        {score:.1f}%
+    </div>
 
-            <div class="label">
-                MODEL RISK SCORE
-            </div>
+    <div class="risk">
+        ✅ Lower Screening Risk
+    </div>
 
-            <div class="score">
-                {score:.1f}%
-            </div>
+    <div class="description">
+        Your model score is below the screening threshold.
+        <br>
+        This result does not rule out diabetes or replace
+        professional screening.
+    </div>
 
-            <div class="risk">
-                ✅ Lower Screening Risk
-            </div>
+    <div class="threshold">
+        Screening Threshold: 35%
+    </div>
 
-            <div class="description">
-                The model score was below the screening threshold.
-                <br>
-                This result does not rule out diabetes or replace
-                professional screening.
-            </div>
+</div>
 
-            <div class="threshold">
-                Screening threshold: 35%
-            </div>
-
-        </div>
-
-        </body>
-
-        </html>
-        """
+</body>
+</html>
+"""
 
 
     components.html(
@@ -665,7 +649,6 @@ m1, m2, m3 = st.columns(3)
 
 
 with m1:
-
     st.metric(
         "Test Accuracy",
         "75.47%"
@@ -673,7 +656,6 @@ with m1:
 
 
 with m2:
-
     st.metric(
         "ROC-AUC",
         "0.8304"
@@ -681,7 +663,6 @@ with m2:
 
 
 with m3:
-
     st.metric(
         "Diabetes Recall",
         "90%"
@@ -715,6 +696,14 @@ st.info(
     "The displayed model risk score should not be interpreted as the "
     "real-world probability that an individual has diabetes. "
     "The model was trained using a balanced dataset."
+)
+
+
+st.warning(
+    "The underlying machine-learning model was trained using the "
+    "U.S. BRFSS 2015 dataset. Indian-style education and income labels "
+    "in this interface are adaptations for usability and do not make "
+    "the underlying model India-specific."
 )
 
 
